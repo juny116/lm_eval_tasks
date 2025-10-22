@@ -1,0 +1,6 @@
+dataset_name: moral_disputes
+description: "The following are multiple choice questions (with answers) about moral disputes.\n\n"
+tag: mmlu_redux_humanities_tasks
+include: _default_template_yaml
+task: mmlu_redux_moral_disputes
+task_alias: moral_disputes_redux

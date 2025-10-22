@@ -1,0 +1,6 @@
+dataset_name: sociology
+description: "The following are multiple choice questions (with answers) about sociology.\n\n"
+tag: mmlu_redux_social_sciences_tasks
+include: _default_template_yaml
+task: mmlu_redux_sociology
+task_alias: sociology_redux

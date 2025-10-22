@@ -1,0 +1,12 @@
+group: mmlu_redux
+group_alias: mmlu_redux
+task:
+  - mmlu_redux_stem
+  - mmlu_redux_other
+  - mmlu_redux_social_sciences
+  - mmlu_redux_humanities
+aggregate_metric_list:
+  - metric: acc
+    weight_by_size: True
+metadata:
+  version: 2
