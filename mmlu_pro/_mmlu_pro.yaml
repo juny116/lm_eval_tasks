@@ -1,4 +1,5 @@
 group: mmlu_pro
+group_alias: mmlu_pro
 task:
   - mmlu_pro_biology
   - mmlu_pro_business
