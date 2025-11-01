@@ -39,9 +39,11 @@ def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
 # user grade_answer function
 def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
     retval = 0
-    last_boxed = last_boxed_only_string(doc["solution"])
-    ground_truth_answer = remove_boxed(last_boxed)
+    ground_truth_answer = doc["answer"]
     predict_last_box = last_boxed_only_string(results[0])
+    print("DEBUG: ground truth answer:", ground_truth_answer)
+    print("DEBUG: predicted last box:", predict_last_box)
+    print("----------------------------")
     if predict_last_box is None:
         return {"exact_match": retval}
     prediction = remove_boxed(predict_last_box)
