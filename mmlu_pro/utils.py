@@ -3,18 +3,17 @@ from functools import partial
 
 choices = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
 
-
 def format_cot_example(example, including_answer=True):
-    prompt = "Question:\n"
+    prompt = "Answer the following multiple choice question. The last line of your response should be in the following format: 'Answer: A/B/C/D/E/F/G/H/I/J' (e.g. 'Answer: A').\n\n"
     question = example["question"]
     options = example["options"]
-    prompt += question + "\n"
-    prompt += "Options:\n"
+    prompt += question + "\n\n"
+    # prompt += "Options:\n"
 
     for i, opt in enumerate(options):
         if i >= len(choices):
             break
-        prompt += "{}. {}\n".format(choices[i], opt)
+        prompt += "{}) {}\n".format(choices[i], opt)
 
     if including_answer:
         cot_content = example["cot_content"].replace(
@@ -22,9 +21,34 @@ def format_cot_example(example, including_answer=True):
         )
         prompt += cot_content + "\n\n"
     else:
-        prompt += "Answer: Let's think step by step."
-
+        # prompt += "Answer: Let's think step by step."
+        # prompt = "<|im_start|>user\n" + prompt + "<|im_end|>\n<|im_start|>assistant\n"#<think>"
+        # prompt = "[|system|][|endofturn|]\n[|user|]" + prompt + "\n[|assistant|]<thought>\n"
+        prompt = prompt
+    
     return prompt
+
+# def format_cot_example(example, including_answer=True):
+#     prompt = "Question:\n"
+#     question = example["question"]
+#     options = example["options"]
+#     prompt += question + "\n"
+#     prompt += "Options:\n"
+
+#     for i, opt in enumerate(options):
+#         if i >= len(choices):
+#             break
+#         prompt += "{}. {}\n".format(choices[i], opt)
+
+#     if including_answer:
+#         cot_content = example["cot_content"].replace(
+#             "A: Let's think step by step.", "Answer: Let's think step by step."
+#         )
+#         prompt += cot_content + "\n\n"
+#     else:
+#         prompt += "Answer: Let's think step by step."
+
+#     return prompt
 
 
 doc_to_text = partial(format_cot_example, including_answer=False)

@@ -1,0 +1,19 @@
+dataset_path: "edinburgh-dawg/mmlu-redux-2.0"
+test_split: test
+dataset_kwargs:
+  trust_remote_code: true
+output_type: generate_until
+doc_to_text: "{{question.strip()}}\n\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\nPlease answer with only the letter of the correct option (A, B, C, or D)."
+doc_to_target: "{{['A', 'B', 'C', 'D'][answer]}}"
+generation_kwargs:
+  until:
+    - "</s>"
+process_results: !function utils.process_results
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_punctuation: true
+    ignore_case: true
+metadata:
+  version: 3.0

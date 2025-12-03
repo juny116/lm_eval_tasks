@@ -1,0 +1,15 @@
+group: hendrycks_math_template
+task:
+  - hendrycks_math_algebra_template
+  - hendrycks_math_counting_and_prob_template
+  - hendrycks_math_geometry_template
+  - hendrycks_math_intermediate_algebra_template
+  - hendrycks_math_num_theory_template
+  - hendrycks_math_prealgebra_template
+  - hendrycks_math_precalc_template
+aggregate_metric_list:
+  - metric: exact_match
+    aggregation: mean
+    weight_by_size: true
+metadata:
+  version: 1.0
