@@ -1,0 +1,9 @@
+group: click_cot
+task:
+  - click_lang
+  - click_cul
+aggregate_metric_list:
+  - metric: exact_match
+    aggregation: mean
+metadata:
+  version: 1.0

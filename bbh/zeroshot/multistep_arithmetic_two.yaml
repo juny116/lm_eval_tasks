@@ -1,0 +1,16 @@
+"dataset_name": "multistep_arithmetic_two"
+"description": "Solve multi-step arithmetic problems.\n\n"
+"doc_to_text": "Answer the following question. The last line of your response should be in the following format: 'Answer: [number]' (e.g. 'Answer: 42').\n\n{{input}}\n"
+"include": "_zeroshot_template_yaml"
+"task": "bbh_zeroshot_multistep_arithmetic_two"
+
+filter_list:
+  - name: "strict-match"
+    filter:
+      - function: "take_first"
+  - name: "flexible-extract"
+    filter:
+      - function: !function utils.NumberParseRegexFilter
+        group_select: -1
+        regex_pattern: "([-0-9]+)"
+      - function: "take_first"

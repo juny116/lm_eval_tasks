@@ -1,0 +1,15 @@
+"dataset_name": "object_counting"
+"description": "Questions that involve enumerating objects and asking the model to count them.\n\n"
+"doc_to_text": "Answer the following question. The last line of your response should be in the following format: 'Answer: [number]' (e.g. 'Answer: 5').\n\n{{input}}\n"
+"include": "_zeroshot_template_yaml"
+"task": "bbh_zeroshot_object_counting"
+filter_list:
+  - name: "strict-match"
+    filter:
+      - function: "take_first"
+  - name: "flexible-extract"
+    filter:
+      - function: !function utils.NumberParseRegexFilter
+        group_select: -1
+        regex_pattern: "([-0-9]+)"
+      - function: "take_first"

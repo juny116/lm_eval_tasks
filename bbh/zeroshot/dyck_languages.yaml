@@ -1,0 +1,15 @@
+"dataset_name": "dyck_languages"
+"description": "Correctly close a Dyck-n word.\n\n"
+"doc_to_text": "Complete the rest of the sequence. The last line of your response should be in the following format: 'Answer: [sequence]' (e.g. 'Answer: ] ]').\n\n{{input}}\n"
+"include": "_zeroshot_template_yaml"
+"task": "bbh_zeroshot_dyck_languages"
+filter_list:
+  - name: "strict-match"
+    filter:
+      - function: "take_first"
+  - name: "flexible-extract"
+    filter:
+      - function: "regex"
+        group_select: -1
+        regex_pattern: "(?<= )([\" \\[\\(<{}>\\)\\]]+)|([\" \\[\\(<{}>\\)\\]]+)"
+      - function: "take_first"

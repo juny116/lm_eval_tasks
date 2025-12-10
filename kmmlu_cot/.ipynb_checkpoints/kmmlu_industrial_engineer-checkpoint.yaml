@@ -1,0 +1,4 @@
+dataset_name: Industrial-Engineer
+include: _default_cot_kmmlu_yaml
+task: kmmlu_industrial_engineer_
+tag: kmmlu_applied_science_tasks_

@@ -1,0 +1,74 @@
+dataset_path: HAERAE-HUB/KMMLU
+output_type: generate_until
+validation_split: dev # not meant to be used, only here to silence warnings
+fewshot_split: dev
+test_split: test
+###
+#doc_to_text: "{{question.strip()}}\nA. {{A}}\nB. {{B}}\nC. {{C}}\nD. {{D}}\n정답: 차근 차근 생각해봅시다."
+#doc_to_text: "<|im_start|>user\n{{question.strip()}}\n(A) {{A}}\n(B) {{B}}\n(C) {{C}}\n(D) {{D}}<|im_end|>\n<|im_start|>assistant/think\n정답: 차근 차근 생각해봅시다."
+# doc_to_text: "<|im_start|>user\n{{question.strip()}}\nA. {{A}}\nB. {{B}}\nC. {{C}}\nD. {{D}}<|im_end|>\n<|im_start|>assistant\n정답: 차근 차근 생각해봅시다."
+doc_to_text: "<|im_start|>user\n{{question.strip()}}\n(A) {{A}}\n(B) {{B}}\n(C) {{C}}\n(D) {{D}}<|im_end|>\n<|im_start|>assistant\n"
+# doc_to_text: "[|system|][|endofturn|]\n[|user|]{{question.strip()}}\n(A) {{A}} (B) {{B}} (C) {{C}} (D) {{D}}\n[|assistant|]<thought>\n"
+### HCX-sofiya
+doc_to_text: "<|im_start|>user\n{{question.strip()}}\nA. {{A}}\nB. {{B}}\nC. {{C}}\nD. {{D}}<|im_end|>\n<|im_start|>assistant\n<think>\n정답:"
+###
+doc_to_target: "{{['A', 'B', 'C', 'D'][answer-1] if answer is defined else target}}" # answer undefined: cot few shot example, else normal sample
+#doc_to_choice: ["A", "B", "C", "D"]
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+filter_list:
+  - name: "flexible-extract"
+    filter:
+      - function: "regex"
+        group_select: -1
+        regex_pattern: "[^a-zA-Z0-9]([A-Z])[^a-zA-Z0-9]"
+  - name: "answer-is-correct-is"
+    filter:
+      - function: "regex"
+        group_select: -1
+        regex_pattern: "정답은 [\\'\\*]*\\(?([A-Z])\\)?[\\'\\*]*|답은 [\\'\\*]*\\(?([A-Z])\\)?[\\'\\*]*|정답: [\\'\\*]*\\(?([A-Z])\\)?[\\'\\*]*|답: [\\'\\*]*\\(?([A-Z])\\)?[\\'\\*]*|[\\'\\*]*\\(?([A-Z])\\)?[\\'\\*]*.+[은는이가] 올바른|[\\'\\*]*\\(?([A-Z])\\)?[\\'\\*]*.+[은는이가] 정답|\\\boxed\\{\\(?([A-Z])\\)?\\}"
+  - name: "get-answer"
+    filter:
+      - function: "regex"
+        regex_pattern: "(?<=정답은)(.*)(?=입니다.)"
+        regex_pattern: "(?<=정답은)\\s*[(]?(A|B|C|D)[)]?.*(?=입니다.)"
+      - function: "take_first"
+generation_kwargs:
+  until:
+    - "</s>"
+    - "Q:"
+    - "<|im_start|>"
+    - "<|im_end|>"
+    - ".assistant"
+    - ". assistant"
+    - "* assistant"
+    - "*assistant"
+    - "\nassistant"
+    - "|assistant"
+  #do_sample: false
+  #temperature: 0.0
+  max_gen_toks: 2048
+metadata:
+  version: 2.0
+
+#metric_list:
+#  - metric: exact_match
+#    aggregation: mean
+#    higher_is_better: True
+#  - name: "get-answer"
+#    filter:
+#      - function: "regex"
+#        regex_pattern: "(?<=정답은)(.*)(?=입니다.)"
+#        regex_pattern: "(?<=정답은)\\s*[(]?(A|B|C|D)[)]?.*(?=입니다.)"
+#        regex_pattern: "\\s*[(]?(A|B|C|D)[)]?.*[은|는|이|가] (?=정답입니다.)"
+#        regex_pattern: "\\s*[(]?(A|B|C|D)[)]?.*(?=올바른)"
+#        # regex_pattern: "\\s*[(]?(A|B|C|D)[)]?.*(?=틀린)"
+#      - function: "take_first"
+
+# doc_to_target: "{{answer-1}}"
+# doc_to_target: "{{['A', 'B', 'C', 'D'][answer-1] if answer is defined else target}}" # answer undefined: cot few shot example, else normal sample
+

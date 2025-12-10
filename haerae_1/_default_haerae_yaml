@@ -1,0 +1,27 @@
+dataset_path: HAERAE-HUB/HAE_RAE_BENCH_1.0
+test_split: test
+fewshot_split: test
+output_type: generate_until
+doc_to_text: "다음 객관식 문제에 답하세요. 응답의 마지막 줄은 다음 형식이어야 합니다: '정답: A/B/C/D/E' (예: '정답: A').\n\n{{question}}\nA) {{a}}\nB) {{b}}\nC) {{c}}\nD) {{d}}\nE) {{e}}"
+doc_to_target: "{{answer}}"
+target_delimiter: ":"
+generation_kwargs:
+  until:
+    - "</s>"
+    - "Question:"
+  max_gen_toks: 2048
+  do_sample: true
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+filter_list:
+  - name: "answer-extract"
+    filter:
+      - function: "regex"
+        group_select: -1
+        regex_pattern: "[\\*\\_]{0,2}정답[\\*\\_]{0,2}\\s*:[\\s\\*\\_]{0,2}\\s*\\(?([A-E])(?![a-zA-Z0-9])|\\boxed\\{[^}]*([A-E])[^}]*\\}|정답은 \\(?([a-zA-Z])|정답이 \\(?([a-zA-Z])|([A-E])\\)\\s*[^A-E]*|([A-E])\\)?\\s+이\\s+정답|([A-E])\\)?\\s*$|([A-E])\\)?\\s*\\.|([A-E])\\)?\\s*[^\\w]"
+metadata:
+  version: 2.0

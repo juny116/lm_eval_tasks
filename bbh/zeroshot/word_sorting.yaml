@@ -1,0 +1,14 @@
+"dataset_name": "word_sorting"
+"description": "Sort a list of words.\n\n"
+"doc_to_text": "Answer the following question. The last line of your response should be in the following format: 'Answer: [answer]' (e.g. 'Answer: apple banana cherry').\n\n{{input}}\n"
+"include": "_zeroshot_template_yaml"
+"task": "bbh_zeroshot_word_sorting"
+filter_list:
+  - name: "strict-match"
+    filter:
+      - function: "take_first"
+  - name: "flexible-extract"
+    filter:
+      - function: !function utils.WordSortFilter
+        group_select: -1
+      - function: "take_first"
