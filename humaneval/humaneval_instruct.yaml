@@ -1,0 +1,21 @@
+include: humaneval.yaml
+task: humaneval_instruct
+doc_to_text: |
+  Complete the following function:
+
+  {{prompt}}
+
+  Format your response as follows:
+  ```python
+  # Your solution here
+  ```
+
+  Only output Python code. Do not include explanations.
+gen_prefix: ""
+filter_list:
+  - name: "create_test"
+    filter:
+      - function: "custom"
+        filter_fn: !function utils.build_predictions_instruct_robust
+metadata:
+  version: 4.0

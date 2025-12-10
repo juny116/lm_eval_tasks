@@ -22,12 +22,12 @@ metric_list:
 
 # IMPORTANT: rename your filter to "default" so older harness automatically applies it.
 filter_list:
-  - name: default
-    filter:
-      # This captures the first single capital letter A/B/C/D
-      - function: regex
-        regex_pattern: "([ABCD])"
-      - function: take_first
+  # - name: default
+  #   filter:
+  #     # This captures the first single capital letter A/B/C/D
+  #     - function: regex
+  #       regex_pattern: "([ABCD])"
+  #     - function: take_first
   - name: "ai-analytics"
     filter:
       - function: "regex"

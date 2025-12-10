@@ -22,7 +22,6 @@ def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
     retval = 0
     gold = parse(doc["solution"])
     answer = parse(results[0])
-    print(f"DEBUG: gold answer: {gold}, model answer: {answer}")
     if verify(gold, answer):
         retval = 1
     results = {

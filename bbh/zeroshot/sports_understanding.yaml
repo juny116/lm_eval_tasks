@@ -1,0 +1,19 @@
+"dataset_name": "sports_understanding"
+"description": "Determine whether an artificially constructed sentence relating to sports is plausible or not.\n\n"
+"doc_to_text": "Answer the following Yes/No question. The last line of your response should be in the following format: 'Answer: yes/no' (e.g. 'Answer: yes').\n\n{{input}}\n"
+"include": "_zeroshot_template_yaml"
+"task": "bbh_zeroshot_sports_understanding"
+
+filter_list:
+  - name: "strict-match"
+    filter:
+      - function: "take_first"
+  - name: "flexible-extract"
+    filter:
+      - function: !function utils.MapRegexFilter
+        group_select: -1
+        ignore_case: true
+        regex_pattern_to_value:
+          \b(no|not plausible)\b: "no"
+          \b(yes|plausible)\b: "yes"
+      - function: "take_first"
