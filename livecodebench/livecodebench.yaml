@@ -1,6 +1,6 @@
 task: livecodebench
 dataset_path: lighteval/code_generation_lite
-dataset_name: release_v5
+dataset_name: release_v6
 output_type: generate_until
 test_split: test
 process_docs: !function utils.process_docs

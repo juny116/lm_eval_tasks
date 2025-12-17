@@ -1,0 +1,21 @@
+group: haerae_1.1
+task:
+  - haerae_1.1_correct_definition_matching
+  - haerae_1.1_csat_geo
+  - haerae_1.1_csat_law
+  - haerae_1.1_csat_socio
+  - haerae_1.1_date_understanding
+  - haerae_1.1_general_knowledge
+  - haerae_1.1_history
+  - haerae_1.1_loan_words
+  - haerae_1.1_lyrics_denoising
+  - haerae_1.1_proverbs_denoising
+  - haerae_1.1_rare_words
+  - haerae_1.1_reading_comprehension
+  - haerae_1.1_standard_nomenclature
+aggregate_metric_list:
+  - metric: exact_match
+    aggregation: mean
+    weight_by_size: true
+metadata:
+  version: 1.1

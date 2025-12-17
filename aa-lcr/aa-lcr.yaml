@@ -1,0 +1,9 @@
+# lm_eval/tasks/aa_lcr/aa_lcr.yaml
+task: aa_lcr
+class: lm_eval.tasks.aa_lcr.aa_lcr.AALCR
+output_type: generate_until
+test_split: test
+metric_list:
+  - metric: pass@1
+    aggregation: mean
+    higher_is_better: true

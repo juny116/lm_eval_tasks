@@ -1,0 +1,5 @@
+task: hle
+dataset_name: default
+include: _default_hle.yaml
+metadata:
+  version: 1.0

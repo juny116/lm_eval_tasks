@@ -1,0 +1,9 @@
+group: kmmlu_pro
+task:
+  - kmmlu_pro
+aggregate_metric_list:
+  - metric: exact_match
+    aggregation: mean
+    weight_by_size: true
+metadata:
+  version: 1.0

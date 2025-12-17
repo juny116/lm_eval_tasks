@@ -1,0 +1,26 @@
+dataset_path : sean0042/KorMedMCQA
+test_split : test
+output_type: generate_until
+doc_to_text: "다음 객관식 문제에 답하세요. 응답의 마지막 줄은 다음 형식이어야 합니다: '정답: A/B/C/D/E' (예: '정답: A').\n\n{{question.strip()}}\nA) {{A}}\nB) {{B}}\nC) {{C}}\nD) {{D}}\nE) {{E}}"
+doc_to_target: "{{['A', 'B', 'C', 'D', 'E'][answer-1]}}"
+target_delimiter: ":"
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+filter_list:
+  - name: "answer-extract"
+    filter:
+      - function: "regex"
+        group_select: -1
+        regex_pattern: "정답은\\s*[\\'\\*]*\\(?([A-E])\\)?[\\'\\*]*|답은\\s*[\\'\\*]*\\(?([A-E])\\)?[\\'\\*]*|정답:\\s*[\\'\\*]*\\(?([A-E])\\)?[\\'\\*]*|답:\\s*[\\'\\*]*\\(?([A-E])\\)?[\\'\\*]*|([A-E]):\\s|[Aa]:\\s*\\(?([A-E])\\)?|[\\'\\*]*\\(?([A-E])\\)?[\\'\\*]*.+[은는이가]\\s*올바른|[\\'\\*]*\\(?([A-E])\\)?[\\'\\*]*.+[은는이가]\\s*정답|\\boxed\\{\\(?([A-E])\\)?\\}|[^a-zA-Z0-9]([A-E])[^a-zA-Z0-9]|^([A-E])$"
+generation_kwargs:
+  until:
+    - "Q:"
+  do_sample: false
+  temperature: 0.0
+  max_gen_toks: 1024
+metadata:
+  version: 2.0
