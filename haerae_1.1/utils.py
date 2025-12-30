@@ -1,5 +1,6 @@
 from typing import Dict, List
 import re
+import string
 
 
 def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
@@ -8,13 +9,15 @@ def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
         # Handle if text is a list
         if isinstance(text, list):
             text = text[0] if text else ""
+        # Remove leading/trailing whitespace
+        text = text.strip()
         # Remove quotes
         text = re.sub(r'["\']', '', text)
-        # Remove trailing punctuation
-        text = re.sub(r'[,.]$', '', text)
-        # Normalize whitespace
+        # Remove punctuation
+        text = text.translate(str.maketrans('', '', string.punctuation))
+        # Normalize multiple spaces to single space
         text = re.sub(r'\s+', ' ', text)
-        # Strip leading/trailing spaces
+        # Strip again after cleanup
         text = text.strip()
         return text
 

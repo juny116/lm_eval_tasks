@@ -1,15 +1,15 @@
 dataset_name: lyrics_denoising
 include: _default_haerae_1.1.yaml
 task: haerae_1.1_lyrics_denoising
-doc_to_text: "{{query}}"
+doc_to_text: "최종 답변은 반드시 다음 형식으로 작성하세요:\n정답: [MASK에 들어갈 가사]\n\n예시:\n정답: 이곳에 멈춰서 너를 기다리고 있는\n\n{{query}}\n\n"
 doc_to_target: "{{answer}}"
 output_type: generate_until
 filter_list:
   - name: "flexible-extract"
     filter:
       - function: "regex"
-        regex_pattern: "[\\s\\S]*"
-        group_select: 0
+        regex_pattern: "정답:\\s*(.+?)(?:\n|$)"
+        group_select: -1
 process_results: !function utils.process_results
 metric_list:
   - metric: exact_match
