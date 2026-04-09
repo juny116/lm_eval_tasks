@@ -1,4 +1,0 @@
-dataset_name: Geomatics
-include: _default_cot_kmmlu_yaml
-task: kmmlu_geomatics_
-tag: kmmlu_applied_science_tasks_

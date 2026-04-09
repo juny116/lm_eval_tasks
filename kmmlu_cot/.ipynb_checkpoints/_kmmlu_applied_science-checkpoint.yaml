@@ -1,8 +1,0 @@
-group: kmmlu_applied_science_
-task:
-  - kmmlu_applied_science_tasks_
-aggregate_metric_list:
-  - metric: acc
-    weight_by_size: True
-metadata:
-  version: 2.0

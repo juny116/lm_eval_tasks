@@ -1,4 +1,0 @@
-dataset_name: Biology
-include: _default_cot_kmmlu_yaml
-task: kmmlu_biology_
-tag: kmmlu_stem_tasks_

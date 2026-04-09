@@ -1,4 +1,0 @@
-dataset_name: Criminal-Law
-include: _default_cot_kmmlu_yaml
-task: kmmlu_criminal_law_
-tag: kmmlu_humss_tasks_

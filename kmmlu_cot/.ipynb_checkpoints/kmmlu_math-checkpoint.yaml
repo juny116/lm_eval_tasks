@@ -1,4 +1,0 @@
-dataset_name: Math
-include: _default_cot_kmmlu_yaml
-task: kmmlu_math_
-tag: kmmlu_stem_tasks_

@@ -1,4 +1,0 @@
-dataset_name: Patent
-include: _default_cot_kmmlu_yaml
-task: kmmlu_patent_
-tag: kmmlu_other_tasks_

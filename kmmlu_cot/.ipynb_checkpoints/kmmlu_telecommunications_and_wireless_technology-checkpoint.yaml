@@ -1,4 +1,0 @@
-dataset_name: Telecommunications-and-Wireless-Technology
-include: _default_cot_kmmlu_yaml
-task: kmmlu_telecommunications_and_wireless_technology_
-tag: kmmlu_applied_science_tasks_
