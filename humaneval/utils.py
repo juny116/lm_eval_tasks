@@ -1,5 +1,5 @@
-import evaluate as hf_evaluate
 import re
+import evaluate as hf_evaluate
 
 
 try:
@@ -24,8 +24,31 @@ def pass_at_k(references: list[str], predictions: list[list[str]], k: list[int] 
     return res[0]
 
 
+def _remove_think_tags(text: str) -> str:
+    """<think>...</think> 태그 제거 및 코드 블록 추출"""
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
+    
+    # 마크다운 코드 블록 추출: ```python ... ```
+    pattern = r"```(?:python)?\s*\n(.*?)\n```"
+    matches = re.findall(pattern, text, re.DOTALL)
+    if matches:
+        return matches[0].strip()
+    
+    # Fallback: 코드 블록이 없으면 "def "부터 시작하는 부분만 반환
+    lines = text.split('\n')
+    for i, line in enumerate(lines):
+        if line.strip().startswith('def '):
+            # "def "부터 문장 끝까지 추출
+            rest = '\n'.join(lines[i:])
+            # 이상한 문자 제거 (공백, 영문, 숫자, 기호만 유지)
+            rest = re.sub(r'[^\w\s()[\]{}:,.\-+*/<>=!&|^@#%$\\;\'"\n]', '', rest)
+            return rest.strip()
+    
+    return text
+
+
 def build_predictions(resps: list[list[str]], docs: list[dict]) -> list[list[str]]:
-    return [[doc["prompt"] + r for r in resp] for resp, doc in zip(resps, docs)]
+    return [[doc["prompt"] + _remove_think_tags(r) for r in resp] for resp, doc in zip(resps, docs)]
 
 
 def build_predictions_instruct(
@@ -33,66 +56,11 @@ def build_predictions_instruct(
 ) -> list[list[str]]:
     return [
         [
-            doc["prompt"] + (r if r.find("```") == -1 else r[: r.find("```")])
+            doc["prompt"] + (
+                _remove_think_tags(r) if _remove_think_tags(r).find("```") == -1 
+                else _remove_think_tags(r)[: _remove_think_tags(r).find("```")]
+            )
             for r in resp
         ]
         for resp, doc in zip(resps, docs)
     ]
-
-
-def build_predictions_instruct_robust(
-    resps: list[list[str]], docs: list[dict]
-) -> list[list[str]]:
-    """
-    Robustly extract code from model responses in various formats.
-    Handles: code blocks, direct def statements, and mixed content.
-    """
-    results = []
-    for resp, doc in zip(resps, docs):
-        codes = []
-        for r in resp:
-            code = _extract_code(r)
-            # codes.append(doc["prompt"] + code)
-            codes.append(doc["prompt"] + code)
-        results.append(codes)
-    return results
-
-
-def _extract_code(response: str) -> str:
-    """
-    Extract Python code from various response formats.
-    Priority:
-    1. Code within ```python ... ``` blocks
-    2. Direct function definition (def statement)
-    3. First occurrence of 'def ' in response
-    4. Entire response if starts with valid code
-    """
-    response = response.strip()
-    
-    # Priority 1: Extract from ```python ... ``` blocks
-    python_blocks = re.findall(r"```python\n(.*?)\n```", response, re.DOTALL)
-    if python_blocks:
-        # Use the first code block, remove trailing backticks
-        code = python_blocks[0].strip()
-        return code
-    
-    # Priority 2: Check if response is directly valid Python code
-    if response.startswith("def "):
-        return response
-    
-    # Priority 3: Find first 'def ' and extract from there
-    def_match = re.search(r"def\s+\w+\s*\(", response)
-    if def_match:
-        code = response[def_match.start():]
-        # Remove any trailing explanation or markdown after function definition
-        code = re.split(r"```|^[A-Za-z]|^$", code)[0].strip()
-        return code
-    
-    # Priority 4: Try to extract code block without python marker
-    code_blocks = re.findall(r"```\n(.*?)\n```", response, re.DOTALL)
-    if code_blocks:
-        code = code_blocks[0].strip()
-        return code
-    
-    # Fallback: Return entire response (might work for simple cases)
-    return response

@@ -1,0 +1,4 @@
+dataset_name: Chemistry
+include: _default_cot_kmmlu_yaml
+task: kmmlu_chemistry_
+tag: kmmlu_stem_tasks_

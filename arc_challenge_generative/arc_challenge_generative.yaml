@@ -1,0 +1,30 @@
+tag:
+  - ai2_arc
+task: arc_challenge_generative
+dataset_path: allenai/ai2_arc
+dataset_name: ARC-Challenge
+output_type: generate_until
+training_split: train
+validation_split: validation
+test_split: test
+doc_to_text: !function utils.doc_to_text
+doc_to_target: "{{answerKey}}"
+filter_list:
+  - name: "ai-analytics"
+    filter:
+      - function: "regex"
+        group_select: -1
+        regex_pattern: "[\\*\\_]{0,2}[Aa]nswer[\\*\\_]{0,2}\\s*:[\\s\\*\\_]{0,2}\\s*\\(?([A-Z])(?![a-zA-Z0-9])|\\boxed\\{[^}]*([A-Z])[^}]*\\}|answer is \\(?([a-zA-Z])|answer is \\(?([a-zA-Z])|([A-Z])\\)\\s*[^A-Z]*|([A-Z])\\)?\\s+is\\s+the\\s+correct\\s+answer|([A-Z])\\)?\\s*$|([A-Z])\\)?\\s*\\.|([A-Z])\\)?\\s*[^\\w]"
+generation_kwargs:
+  until:
+    - "<|endoftext|>"
+  max_gen_toks: 8192
+  do_sample: true
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+metadata:
+  version: 1.0

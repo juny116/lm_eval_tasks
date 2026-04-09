@@ -1,21 +1,23 @@
 include: humaneval.yaml
 task: humaneval_instruct
-doc_to_text: |
-  Complete the following function:
+doc_to_text: "Write a solution to the following problem and make sure that it passes the tests:\n```python\n{{ prompt }}\n```\n"
+# doc_to_text: |
+#   Complete the following function:
 
-  {{prompt}}
+#   {{prompt}}
 
-  Format your response as follows:
-  ```python
-  # Your solution here
-  ```
+#   Format your response as follows:
+#   ```python
+#   # Your solution here
+#   ```
 
-  Only output Python code. Do not include explanations.
+#   Only output Python code. Do not include explanations.
+# gen_prefix: "Here is the completed function:\n```python\n{{ prompt }}\n"
 gen_prefix: ""
 filter_list:
   - name: "create_test"
     filter:
       - function: "custom"
-        filter_fn: !function utils.build_predictions_instruct_robust
+        filter_fn: !function utils.build_predictions_instruct
 metadata:
   version: 4.0

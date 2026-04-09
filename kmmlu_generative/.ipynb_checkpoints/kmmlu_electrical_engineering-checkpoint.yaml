@@ -1,0 +1,4 @@
+dataset_name: Electrical-Engineering
+include: _default_cot_kmmlu_yaml
+task: kmmlu_electrical_engineering_
+tag: kmmlu_stem_tasks_

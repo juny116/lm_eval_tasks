@@ -252,6 +252,9 @@ def _extract_code(response: str, doc: dict) -> str:
         Output: "def main():\\n    print(input())"
     """
     response = response.strip()
+    
+    # <think>...</think> 태그 제거
+    response = re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL).strip()
 
     # LiveCodeBench regex pattern - most specific
     # Matches code between ```python and ``` using lookbehind/lookahead
@@ -267,6 +270,26 @@ def _extract_code(response: str, doc: dict) -> str:
     code_blocks = re.findall(r"```python\n(.*?)\n```", response, re.DOTALL)
     if code_blocks:
         return code_blocks[0].strip()
+    
+    # Fallback 2: markdown 없이 코드만 있는 경우
+    # "def "나 "class "로 시작하는 부분 찾기
+    lines = response.split('\n')
+    code_start_idx = -1
+    
+    for i, line in enumerate(lines):
+        if line.strip().startswith(('def ', 'class ', 'import ')):
+            code_start_idx = i
+            break
+    
+    if code_start_idx >= 0:
+        code_lines = lines[code_start_idx:]
+        result = []
+        for line in code_lines:
+            # 공백, 영문, 숫자, 파이썬 기호만 유지
+            cleaned = re.sub(r'[^\w\s()[\]{}:,.\-+*/<>=!&|^@#%$\\;\'"\n]', '', line)
+            if cleaned.strip():
+                result.append(cleaned)
+        return '\n'.join(result).strip()
 
     # Fallback: Return entire response as code
     # Assumes response is already code without markdown formatting

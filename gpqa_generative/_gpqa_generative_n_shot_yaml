@@ -1,0 +1,30 @@
+dataset_path: Idavidrein/gpqa
+tag: gpqa_generative
+output_type: generate_until
+process_docs: !function utils.process_docs
+training_split: train
+validation_split: train
+test_split: null
+doc_to_text: "Answer the following multiple choice question. The last line of your response should be in the following format: 'Answer: A/B/C/D' (e.g. 'Answer: A').\n\n{{Question}}\nA) {{choice1}}\nB) {{choice2}}\nC) {{choice3}}\nD) {{choice4}}"
+doc_to_target: answer
+filter_list:
+  - name: "ai-analytics"
+    filter:
+      - function: "regex"
+        group_select: -1
+        regex_pattern: "[\\*\\_]{0,2}[Aa]nswer[\\*\\_]{0,2}\\s*:[\\s\\*\\_]{0,2}\\s*\\(?([A-D])(?![a-zA-Z0-9])|\\boxed\\{[^}]*([A-D])[^}]*\\}|answer is \\(?([a-dA-D])|answer is \\(?([a-dA-D])|([A-D])\\)\\s*[^A-D]*|([A-D])\\)?\\s+is\\s+the\\s+correct\\s+answer|([A-D])\\)?\\s*$|([A-D])\\)?\\s*\\.|([A-D])\\)?\\s*[^\\w]"
+generation_kwargs:
+  until:
+    - "</s>"
+    - "Question:"
+    - "<|im_end|>"
+  max_gen_toks: 16384
+  do_sample: true
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+metadata:
+  version: 2.0

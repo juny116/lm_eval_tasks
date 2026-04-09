@@ -1,0 +1,17 @@
+import re
+from typing import Dict, List
+from math_verify import parse, verify
+
+def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
+    retval = 0
+
+    # to match aime25 format
+    gold = parse("\\boxed{"+str(doc["answer"])+"}")
+    answer = parse(results[0])
+    if verify(gold, answer):
+        retval = 1
+    results = {
+        "exact_match": retval,
+    }
+    return results
+

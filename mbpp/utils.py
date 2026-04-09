@@ -30,45 +30,68 @@ def pass_at_1(
 
 
 def extract_code_blocks(text: str) -> str:
-    """
-    Robustly extract Python code from various response formats.
-    Priority:
-    1. Code within ```python ... ``` blocks
-    2. Code within ``` ... ``` blocks (generic)
-    3. Direct function definition (def statement)
-    4. First occurrence of 'def ' in response
-    5. Entire response if starts with valid code
-    """
-    text = text.strip()
+    # <think> 태그 제거
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL).strip()
     
-    # Priority 1: Extract from ```python ... ``` blocks
-    python_blocks = re.findall(r"```python\n(.*?)\n```", text, re.DOTALL)
-    if python_blocks:
-        return python_blocks[0].strip()
+    # Pattern to match ```...``` blocks
+    pattern = r"```(?:\w+)?\n?(.*?)\n?```"
+    # (+ ```) as we add the opening "```python" to the gen_prefix
+    matches = re.findall(pattern, r"```" + text, re.DOTALL)
     
-    # Priority 2: Extract from generic ``` ... ``` blocks
-    generic_blocks = re.findall(r"```\n(.*?)\n```", text, re.DOTALL)
-    if generic_blocks:
-        return generic_blocks[0].strip()
+    if matches:
+        return matches[0].strip()
     
-    # Priority 3: Check if response is directly valid Python code starting with 'def'
-    if text.startswith("def "):
-        return text
+    # Fallback: 마크다운이 없으면, 함수 정의부터 시작하는 가장 가능성 높은 부분 추출
+    # "def " 또는 "class " 또는 "import "로 시작하는 라인 찾기
+    lines = text.split('\n')
+    code_start_idx = -1
     
-    # Priority 4: Find first 'def ' and extract from there
-    def_match = re.search(r"def\s+\w+\s*\(", text)
-    if def_match:
-        code = text[def_match.start():]
-        # Remove any trailing explanation or markdown after function definition
-        code = re.split(r"```|^[A-Za-z]|^$", code)[0].strip()
-        return code
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith(('def ', 'class ', 'import ')):
+            code_start_idx = i
+            break
     
-    # Fallback: Return entire response
-    return text
+    if code_start_idx >= 0:
+        # 코드 시작부터 끝까지 추출하되, 이상한 문자 제거
+        code_lines = lines[code_start_idx:]
+        code_text = '\n'.join(code_lines).strip()
+        
+        # 코드 블록 이후의 이상한 텍스트 제거 (예: "dlfjst")
+        # 유효한 파이썬 코드로 보이는 부분까지만 유지
+        lines = code_text.split('\n')
+        result_lines = []
+        for line in lines:
+            # 빈 줄이나 주석은 포함
+            if not line.strip() or line.strip().startswith('#'):
+                result_lines.append(line)
+            # 파이썬 코드처럼 보이는 줄
+            elif any(line.strip().startswith(kw) for kw in ['def ', 'class ', 'if ', 'for ', 'while ', 'return ', 'import ', 'from ', 'try:', 'except', 'finally:', 'with ', 'raise ', 'assert ']):
+                result_lines.append(line)
+            # 들여쓰기가 있으면 코드의 일부일 가능성 높음
+            elif line[0] in ' \t':
+                result_lines.append(line)
+            # 그 외는 첫 번째 이상한 문자로 중단
+            elif line.strip() and not any(ord(c) < 32 or ord(c) > 126 for c in line):
+                # 영문자와 숫자, 특수기호만 있으면 계속
+                if any(c.isalpha() or c.isdigit() for c in line):
+                    # 마지막 유효한 코드 줄일 가능성 있음
+                    last_valid = line.rstrip()
+                    # 변수명이나 괄호 같은 것이 있으면 포함
+                    if any(c in '()[]{}:,.' for c in last_valid) or last_valid.replace('_', '').replace('-', '').isalnum():
+                        result_lines.append(line)
+                        break
+                    else:
+                        break
+            else:
+                break
+        
+        return '\n'.join(result_lines).strip()
+    
+    return ""
 
 
 def build_predictions(resps: list[list[str]], docs: list[dict]) -> list[list[str]]:
-    """Extract and build predictions for MBPP."""
     return [[extract_code_blocks(r) for r in resp] for resp in resps]
 
 
