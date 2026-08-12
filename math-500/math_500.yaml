@@ -16,7 +16,7 @@ process_results: !function utils.process_results
 doc_to_target: "{{answer}}"
 generation_kwargs:
   until:
-    - "Problem:"
+    - "<|im_end|>"
   do_sample: false
   temperature: 0
 metric_list:
